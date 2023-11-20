@@ -1,16 +1,12 @@
-# ITVB23OWS Development Pipelines starter code
+# ITVB23OWS
 
-This repository contains starter code for the course ITVB23OWS Development pipelines,
-which is part of the HBO-ICT program at Hanze University of Applied Sciences in
-Groningen.
+Repository for ITVB23OWS [Development Pipelines](https://github.com/hanze-hbo-ict/itvb23ows-starter-code) at Hanze University of Applied Sciences.
 
-This is a deliberately poor software project, containing bugs and missing features. It
-is not intended as a demonstration of proper software engineering techniques.
+## Installation
 
-The application contains PHP 5.6 code and should run using the built-in PHP server,
-which can be started using the following command.
+Using a PHP 5.6 or higher web server, run the following command in the directory containing index.php:
 
-```
+```sh
 php -S localhost:8000
 ```
 
@@ -18,6 +14,6 @@ In addition to PHP 5.6 or higher, the code requires the mysqli extension and a M
 or compatible server. The application assumes a root user without password, and tries
 to access the database `hive`. The file `hive.sql` contains the database schema.
 
-This application is licensed under the MIT license, see `LICENSE.md`. Questions
-and comments can be directed to
-[Ralf van den Broek](https://github.com/ralfvandenbroek).
+## License
+
+This application is licensed under the MIT license, see `LICENSE.md`. Questions and comments can be directed to [Ralf van den Broek](https://github.com/ralfvandenbroek).
