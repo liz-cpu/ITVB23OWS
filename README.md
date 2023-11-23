@@ -4,15 +4,13 @@ Repository for ITVB23OWS [Development Pipelines](https://github.com/hanze-hbo-ic
 
 ## Installation
 
-Using a PHP 5.6 or higher web server, run the following command in the directory containing index.php:
+Using docker-compose, the application can be started with the following command:
 
 ```sh
-php -S localhost:8000
+docker-compose up -d --build
 ```
 
-In addition to PHP 5.6 or higher, the code requires the mysqli extension and a MySQL
-or compatible server. The application assumes a root user without password, and tries
-to access the database `hive`. The file `hive.sql` contains the database schema.
+The application will be available at [http://localhost:8080](http://localhost:8080).
 
 ## License
 
