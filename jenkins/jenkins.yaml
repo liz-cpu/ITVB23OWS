@@ -1,0 +1,7 @@
+# jenkins/jenkins.yaml
+jenkins:
+  systemMessage: "Jenkins configured with JCasC"
+
+unclassified:
+  location:
+    adminAddress: "admin@company.com"
