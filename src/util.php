@@ -18,7 +18,9 @@ function isNeighbour($a, $b)
 function hasNeighBour($a, $board)
 {
     foreach (array_keys($board) as $b) {
-        if (isNeighbour($a, $b)) return true;
+        if (isNeighbour($a, $b)) {
+            return true;
+        }
     }
 }
 
@@ -51,7 +53,9 @@ function slide($board, $from, $to)
     foreach ($GLOBALS['OFFSETS'] as $pq) {
         $p = $b[0] + $pq[0];
         $q = $b[1] + $pq[1];
-        if (isNeighbour($from, $p . "," . $q)) $common[] = $p . "," . $q;
+        if (isNeighbour($from, $p . "," . $q)) {
+            $common[] = $p . "," . $q;
+        }
     }
     if (!$board[$common[0]] && !$board[$common[1]] && !$board[$from] && !$board[$to]) {
         return false;
