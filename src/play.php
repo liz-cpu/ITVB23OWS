@@ -26,7 +26,7 @@ if (!$hand[$piece]) {
     $_SESSION['hand'][$player][$piece]--;
     $_SESSION['player'] = 1 - $_SESSION['player'];
 
-    $db = include 'database.php';
+    $db = include_once 'database.php';
     $stmt = $db->prepare('INSERT INTO moves (game_id, type, move_from, move_to, previous_id, state) VALUES (?, "play", ?, ?, ?, ?)');
     $state = getState();
 
