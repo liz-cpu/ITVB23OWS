@@ -1,0 +1,7 @@
+{
+    "name": "liz-cpu/hivegame",
+    "description": "The Hove board game",
+    "type": "project",
+    "license": "MIT",
+    "version": "0.0.1"
+}
