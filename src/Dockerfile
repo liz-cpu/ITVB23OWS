@@ -13,7 +13,11 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
-RUN composer install --no-interaction --optimize-autoloader
+RUN composer install --no-interaction --optimize-autoloader --no-suggest --no-progress --no-scripts
+
+RUN curl -LO https://phar.phpunit.de/phpunit-9.phar \
+    && chmod +x phpunit-9.phar \
+    && mv phpunit-9.phar /usr/local/bin/phpunit
 
 EXPOSE 80
 
