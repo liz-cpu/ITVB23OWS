@@ -1,8 +1,9 @@
 <?php
-
+namespace Hive;
 session_start();
 
-include_once 'util.php';
+use Hive\Util;
+use Hive\Database;
 
 $from = $_POST['from'];
 $to = $_POST['to'];
@@ -20,7 +21,7 @@ if (!isset($board[$from])) {
     $_SESSION['error'] = "Queen bee is not played";
 } else {
     $tile = array_pop($board[$from]);
-    if (!hasNeighBour($to, $board)) {
+    if (!Util::hasNeighBour($to, $board)) {
         $_SESSION['error'] = "Move would split hive";
     } else {
         $all = array_keys($board);
@@ -45,7 +46,7 @@ if (!isset($board[$from])) {
             } elseif (isset($board[$to]) && $tile[1] != "B") {
                 $_SESSION['error'] = 'Tile not empty';
             } elseif ($tile[1] == "Q" || $tile[1] == "B") {
-                if (!slide($board, $from, $to)) {
+                if (!Util::slide($board, $from, $to)) {
                     $_SESSION['error'] = 'Tile must slide';
                 }
             }
@@ -64,12 +65,13 @@ if (!isset($board[$from])) {
             $board[$to] = [$tile];
         }
         $_SESSION['player'] = 1 - $_SESSION['player'];
-        $db = include_once 'database.php';
-        $stmt = $db->prepare('insert into moves (game_id, type, move_from, move_to, previous_id, state) values (?, "move", ?, ?, ?, ?)');
-        $state = getState();
+        $db = Database::getInstance();
+        $conn = $db->connect();
+        $stmt = $conn->prepare('insert into moves (game_id, type, move_from, move_to, previous_id, state) values (?, "move", ?, ?, ?, ?)');
+        $state = $db->getState();
         $stmt->bind_param('issis', $_SESSION['game_id'], $from, $to, $_SESSION['last_move'], $state);
         $stmt->execute();
-        $_SESSION['last_move'] = $db->insert_id;
+        $_SESSION['last_move'] = $conn->insert_id;
     }
     $_SESSION['board'] = $board;
 }

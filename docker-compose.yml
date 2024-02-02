@@ -1,15 +1,15 @@
 version: "3"
 
 services:
-    hivegame:
+    hive_game:
         build:
-            context: ./src
+            context: ./app
         ports:
             - "8080:80"
         depends_on:
-            - hivedb
+            - hive_db
         command: php -S 0.0.0.0:80
-    hivedb:
+    hive_db:
         build:
             context: ./db
         ports:

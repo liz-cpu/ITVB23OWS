@@ -2,7 +2,7 @@
 
 session_start();
 
-include_once 'util.php';
+use Hive\Util;
 
 if (!isset($_SESSION['board'])) {
     header('Location: restart.php');
