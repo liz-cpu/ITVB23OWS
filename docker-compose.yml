@@ -14,3 +14,26 @@ services:
             context: ./db
         ports:
             - "3307:3306"
+    jenkins:
+        image: jenkins/jenkins:lts
+        ports:
+            - "8081:8080"
+        networks:
+            - hive_network
+        depends_on:
+            - hive_game
+            - hive_db
+            - sonarqube
+    sonarqube:
+        image: sonarqube
+        ports:
+            - "9000:9000"
+        networks:
+            - hive_network
+        depends_on:
+            - hive_game
+            - hive_db
+
+networks:
+    hive_network:
+      name: hive_network
