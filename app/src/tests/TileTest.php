@@ -1,28 +1,27 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use game\Board;
+use tiles\Tile;
+use game\Player;
 
 final class TileTest extends TestCase
 {
     public function testGetPlacementsOnEmptyBoard(): void
     {
         // Arrange
-        $mockPlayer = $this->getMockBuilder(\stdClass::class)->getMock();
-        $mockBoard = $this->getMockBuilder(\stdClass::class)->getMock();
+        $mark = new Player('Mark', true);
+        $board = new Board();
 
-        $mockTile = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['getPlacements'])->getMock();
-
-        $mockTile->expects($this->once())
-            ->method('getPlacements')
-            ->with($mockBoard)
-            ->willReturn([[0, 0]]);
+        $mockTile = self::getMockBuilder(Tile::class)
+            ->setConstructorArgs([$mark])
+            ->onlyMethods(['getMoves'])->getMock();
 
         // Act
         $expected = [
             [0, 0]
         ];
-        $result = $mockTile->getPlacements($mockBoard);
+        $result = $mockTile->getPlacements($board);
 
         // Assert
         $this->assertEquals($expected, $result);
@@ -31,25 +30,22 @@ final class TileTest extends TestCase
     public function testGetPlacementsIfBoardIsNotEmpty(): void
     {
         // Arrange
-        $mark = $this->getMockBuilder(\stdClass::class)->getMock();
-        $lee = $this->getMockBuilder(\stdClass::class)->getMock();
-        $mockBoard = $this->getMockBuilder(\stdClass::class)->addMethods(['setTile'])->getMock();
+        $mark = new Player('Mark', true);
+        $lee = new Player('Lee', false);
+        $board = new Board();
 
-        $mockTile0 = $this->getMockBuilder(\stdClass::class)->getMock();
+        $mockTile0 = self::getMockBuilder(Tile::class)
+        ->setConstructorArgs([$mark])
+        ->onlyMethods(['getMoves'])->getMock();
 
-        $mockBoard->setTile(0, 0, $mockTile0);
+        $board->setTile(0, 0, $mockTile0);
 
-        $mockTile1 = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['getPlacements'])->getMock();
+        $mockTile1 = self::getMockBuilder(Tile::class)
+        ->setConstructorArgs([$lee])
+        ->onlyMethods(['getMoves'])->getMock();
 
-        $mockTile1->expects($this->once())
-            ->method('getPlacements')
-            ->with($mockBoard)
-            ->willReturn([
-                [1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]
-            ]);
         // Act
-        $result = $mockTile1->getPlacements($mockBoard);
+        $result = $mockTile1->getPlacements($board);
 
         // Assert
         $expected = [

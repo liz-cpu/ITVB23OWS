@@ -1,22 +1,20 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use tiles\Tile;
+use game\Player;
 
 final class PlayerTest extends TestCase
 {
     public function testGetName(): void
     {
-        $name = 'Mark';
         // Arrange
-        $mockPlayer = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['getName'])->getMock();
-
-        $mockPlayer->expects($this->once())
-            ->method('getName')
-            ->willReturn($name);
+        $name = 'Mark';
+        $isZero = true;
+        $player = new Player($name, $isZero);
 
         // Act
-        $result = $mockPlayer->getName();
+        $result = $player->getName();
 
         // Assert
         $this->assertEquals($name, $result);
@@ -27,15 +25,10 @@ final class PlayerTest extends TestCase
         // Arrange
         $name = 'Mark';
         $isZero = true;
-        $mockPlayer = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['getColorClass'])->getMock();
-
-        $mockPlayer->expects($this->once())
-            ->method('getColorClass')
-            ->willReturn('player0');
+        $player = new Player($name, $isZero);
 
         // Act
-        $result = $mockPlayer->getColorClass();
+        $result = $player->getColorClass();
 
         // Assert
         $this->assertEquals('player0', $result);

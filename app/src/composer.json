@@ -1,15 +1,17 @@
 {
     "name": "liz-cpu/hivegame",
-    "description": "The Hove board game",
+    "description": "The Hive board game",
     "type": "project",
     "license": "MIT",
     "version": "0.0.1",
     "require-dev": {
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "^10.5"
     },
     "autoload": {
         "psr-4": {
-            "Hive\\": "src/"
+            "game\\": "./game",
+            "tiles\\": "./tiles",
+            "tests\\": "./tests"
         }
     }
 }

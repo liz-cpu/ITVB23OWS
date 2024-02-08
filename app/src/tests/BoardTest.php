@@ -1,30 +1,25 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use game\Board;
+use tiles\Tile;
+use game\Player;
 
 final class BoardTest extends TestCase
 {
     public function testSetTile(): void
     {
         // Arrange
-        $mockPlayer = $this->getMockBuilder(\stdClass::class)
-            ->getMock();
+        $mark = new Player('Mark', true);
+        $board = new Board();
 
-        $mockTile = $this->getMockBuilder(\stdClass::class)
-            ->getMock();
-
-        $mockBoard = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['getTile', 'setTile'])->getMock();
-
-        $mockBoard->expects($this->once())
-            ->method('getTile')
-            ->willReturn($mockTile);
-
-        $mockBoard->setTile(0, 0, $mockTile);
+        $mockTile = self::getMockBuilder(Tile::class)
+            ->setConstructorArgs([$mark])
+            ->onlyMethods(['getMoves'])->getMock();
 
         // Act
-
-        $result = $mockBoard->getTile(0, 0, $mockTile);
+        $board->setTile(0, 0, $mockTile);
+        $result = $board->getTile(0, 0);
 
         // Assert
         $this->assertEquals($mockTile, $result);
@@ -33,16 +28,10 @@ final class BoardTest extends TestCase
     public function testIsEmpty(): void
     {
         // Arrange
-        $mockBoard = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['isEmpty'])
-            ->getMock();
-
-        $mockBoard->expects($this->once())
-            ->method('isEmpty')
-            ->willReturn(true);
+        $board = new Board();
 
         // Act
-        $result = $mockBoard->isEmpty();
+        $result = $board->isEmpty();
 
         // Assert
         $this->assertTrue($result);
@@ -51,21 +40,16 @@ final class BoardTest extends TestCase
     public function testIsTileEmpty(): void
     {
         // Arrange
-        $mockBoard = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['isTileEmpty', 'setTile'])
-            ->getMock();
+        $board = new Board();
 
-        $mockBoard->expects($this->once())
-            ->method('isTileEmpty')
-            ->willReturn(true);
+        $mockTile = self::getMockBuilder(Tile::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getMoves'])->getMock();
 
-        $mockTile = $this->getMockBuilder(\stdClass::class)
-            ->getMock();
-
-        $mockBoard->setTile(0, 0, $mockTile);
+        $board->setTile(0, 0, $mockTile);
 
         // Act
-        $result = $mockBoard->isTileEmpty(0, -1);
+        $result = $board->isTileEmpty(0, -1);
 
         // Assert
         $this->assertTrue($result);
@@ -74,23 +58,18 @@ final class BoardTest extends TestCase
     public function testGetTile(): void
     {
         // Arrange
-        $mockPlayer = $this->getMockBuilder(\stdClass::class)
-            ->getMock();
+        $mark = new Player('Mark', true);
+        $board = new Board();
 
-        $mockBoard = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['getTile', 'setTile'])
-            ->getMock();
-        $mockTile = $this->getMockBuilder(\stdClass::class)
-            ->getMock();
-        $mockBoard->expects($this->once())
-            ->method('getTile')
-            ->willReturn($mockTile);
+        $mockTile = self::getMockBuilder(Tile::class)
+            ->setConstructorArgs([$mark])
+            ->onlyMethods(['getMoves'])->getMock();
 
+        $board->setTile(0, 0, $mockTile);
 
-
-        $mockBoard->setTile(0, 0, $mockTile);
         // Act
-        $result = $mockBoard->getTile(0, 0);
+        $result = $board->getTile(0, 0);
+
         // Assert
         $this->assertEquals($mockTile, $result);
     }
@@ -98,29 +77,18 @@ final class BoardTest extends TestCase
     public function testRemoveTile(): void
     {
         // Arrange
-        $mockPlayer = $this->getMockBuilder(\stdClass::class)
-            ->getMock();
-        $mockBoard = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['removeTile', 'setTile', 'isTileEmpty'])
-            ->getMock();
+        $mark = new Player('Mark', true);
+        $board = new Board();
 
-        $mockTile = $this->getMockBuilder(\stdClass::class)
-            ->getMock();
+        $mockTile = self::getMockBuilder(Tile::class)
+            ->setConstructorArgs([$mark])
+            ->onlyMethods(['getMoves'])->getMock();
 
-        $mockBoard->expects($this->once())
-            ->method('removeTile')
-            ->willReturn($mockTile);
-
-        $mockBoard->expects($this->once())
-            ->method('isTileEmpty')
-            ->willReturn(true);
-
-
-        $mockBoard->setTile(0, 0, $mockTile);
+        $board->setTile(0, 0, $mockTile);
 
         // Act
-        $resultTile = $mockBoard->removeTile(0, 0);
-        $resultIsEmpty = $mockBoard->isTileEmpty(0, 0);
+        $resultTile = $board->removeTile(0, 0);
+        $resultIsEmpty = $board->isTileEmpty(0, 0);
 
         // Assert
         $this->assertEquals($mockTile, $resultTile);
