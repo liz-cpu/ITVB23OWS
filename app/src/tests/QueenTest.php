@@ -1,27 +1,25 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use game\Board;
+use tiles\Queen;
+use game\Player;
 
 final class QueenTest extends TestCase
 {
     public function testMovingToAnOccupiedTileIsNotAllowed(): void
     {
         // Arrange
-        $mark = $this->getMockBuilder(\stdClass::class)->getMock();
-        $mockBoard = $this->getMockBuilder(\stdClass::class)->addMethods(['setTile'])->getMock();
-        $mockQueen = $this->getMockBuilder(\stdClass::class)->addMethods(['isValidMove'])->getMock();
+        $mark = new Player('Mark', true);
+        $board = new Board();
+        $queen = new Queen($mark);
         $q = 0;
         $r = 0;
 
-        $mockQueen->expects($this->once())
-            ->method('isValidMove')
-            ->with($mockBoard, $q, $r, 0, 0)
-            ->willReturn(false);
-
-        $mockBoard->setTile($q, $r, $mockQueen);
+        $board->setTile($q, $r, $queen);
 
         // Act
-        $result = $mockQueen->isValidMove($mockBoard, $q, $r, 0, 0);
+        $result = $queen->isValidMove($board, $q, $r, 0, 0);
 
         // Assert
         $this->assertFalse($result);
@@ -33,23 +31,16 @@ final class QueenTest extends TestCase
     public function testFixIncorrectMoveLegality(): void
     {
         // Arrange
-        $mark = $this->getMockBuilder(\stdClass::class)->getMock();
-        $leah = $this->getMockBuilder(\stdClass::class)->getMock();
-        $mockBoard = $this->getMockBuilder(\stdClass::class)->addMethods(['setTile'])->getMock();
+        $mark = new Player('Mark', true);
+        $leah = new Player('Leah', false);
+        $board = new Board();
 
-        $mockQueen = $this->getMockBuilder(\stdClass::class)->addMethods(['isValidMove'])->getMock();
-        $mockQueens = $this->getMockBuilder(\stdClass::class)->getMock();
-
-        $mockBoard->setTile(0, 0, $mockQueen);
-        $mockBoard->setTile(1, 0, $mockQueens);
-
-        $mockQueen->expects($this->once())
-            ->method('isValidMove')
-            ->with($mockBoard, 0, 0, 0, 1)
-            ->willReturn(true);
+        $queen = new Queen($mark);
+        $board->setTile(0, 0, $queen);
+        $board->setTile(1, 0, new Queen($leah));
 
         // Act
-        $result = $mockQueen->isValidMove($mockBoard, 0, 0, 0, 1);
+        $result = $queen->isValidMove($board, 0, 0, 0, 1);
 
         // Assert
         $this->assertTrue($result);
@@ -58,25 +49,18 @@ final class QueenTest extends TestCase
     public function testGetMovesIfSomeNeighboursAreOccupied(): void
     {
         // Arrange
-        $mark = $this->getMockBuilder(\stdClass::class)->getMock();
-        $leah = $this->getMockBuilder(\stdClass::class)->getMock();
-        $mockBoard = $this->getMockBuilder(\stdClass::class)->addMethods(['setTile'])->getMock();
+        $mark = new Player('Mark', true);
+        $leah = new Player('Leah', false);
+        $board = new Board();
 
-        $mockQueen = $this->getMockBuilder(\stdClass::class)->addMethods(['isValidMove'])->getMock();
-        $mockQueens = $this->getMockBuilder(\stdClass::class)->getMock();
-
-        $mockBoard->setTile(0, 0, $mockQueen);
-        $mockBoard->setTile(1, 0, $mockQueens);
-        $mockBoard->setTile(-1, 1, $mockQueens);
-        $mockBoard->setTile(-1, 0, $mockQueens);
-
-        $mockQueen->expects($this->once())
-            ->method('isValidMove')
-            ->with($mockBoard, 0, 0, 0, 1)
-            ->willReturn(true);
+        $queen = new Queen($mark);
+        $board->setTile(0, 0, $queen);
+        $board->setTile(1, 0, new Queen($leah));
+        $board->setTile(-1, 1, new Queen($mark));
+        $board->setTile(-1, 0, new Queen($leah));
 
         // Act
-        $result = $mockQueen->isValidMove($mockBoard, 0, 0, 0, 1);
+        $result = $queen->isValidMove($board, 0, 0, 0, 1);
 
         // Assert
 
