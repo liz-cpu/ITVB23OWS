@@ -9,10 +9,12 @@ abstract class Tile
 {
     protected string $type_value = '?';
     protected Player $player;
+    protected int $z;
 
     public function __construct(Player $player)
     {
         $this->player = $player;
+        $this->z = 0;
     }
 
     public function getPlayer(): Player
@@ -25,6 +27,15 @@ abstract class Tile
         return $this->type_value;
     }
 
+    public function setZ(int $z): void
+    {
+        $this->z = $z;
+    }
+
+    public function getZ(): int
+    {
+        return $this->z;
+    }
 
     /**
      * Tiles can be placed in the six directions around the tile where they
@@ -126,6 +137,9 @@ abstract class Tile
 
     public function isValidMove(Board $b, int $q, int $r, int $q_new, int $r_new): bool
     {
+        if ($this->z < 0) {
+            return false;
+        }
         $moves = $this->getMoves($b, $q, $r);
 
         foreach ($moves as $move) {

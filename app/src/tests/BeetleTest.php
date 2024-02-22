@@ -1,31 +1,24 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use game\Board;
+use tiles\Queen;
+use tiles\Beetle;
+use game\Player;
 
 final class BeetleTest extends TestCase
 {
     public function testMovingToAnUnoccupiedTileIsAllowed(): void
     {
         // Arrange
-        $mark = $this->getMockBuilder(\stdClass::class)->getMock();
-        $board = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['setTile'])
-            ->getMock();
+        $mark = new Player('Mark', true);
+        $board = new Board();
 
-        $queen = $this->getMockBuilder(\stdClass::class)->getMock();
-        $beetle = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['isValidMove'])
-            ->getMock();
-
-        $mockTile = $this->getMockBuilder(\stdClass::class)->getMock();
+        $queen = new Queen($mark);
+        $beetle = new Beetle($mark);
 
         $board->setTile(0, 0, $queen);
         $board->setTile(0, 1, $beetle);
-
-        $beetle->expects($this->once())
-            ->method('isValidMove')
-            ->with($board, 0, 1, 1, 0)
-            ->willReturn(true);
 
         //Act
         $result = $beetle->isValidMove($board, 0, 1, 1, 0);
@@ -37,63 +30,36 @@ final class BeetleTest extends TestCase
     public function testGetMovesWhenYouCanStackOnTopOfAnotherTile(): void
     {
         // Arrange
-        $mark = $this->getMockBuilder(\stdClass::class)->getMock();
-        $zina = $this->getMockBuilder(\stdClass::class)->getMock();
-        $board = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['setTile'])
-            ->getMock();
+        $mark = new Player('Mark', true);
+        $zina = new Player('Zina', false);
+        $board = new Board();
 
-        $beetle = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['getMoves'])
-            ->getMock();
+        $board->setTile(0, 0, new Queen($mark));
+        $board->setTile(1, 0, new Beetle($zina));
 
-        $mockTile = $this->getMockBuilder(\stdClass::class)->getMock();
-
-        $board->setTile(0, 0, $mockTile);
-        $board->setTile(1, 0, $mockTile);
+        $beetle = new Beetle($mark);
         $board->setTile(0, 1, $beetle);
 
-        $beetle->expects($this->once())
-            ->method('getMoves')
-            ->with($board, 0, 1)
-            ->willReturn([[1, 0], [-1, 1]]);
-
         // Act
-        $result = $beetle->getMoves($board, 0, 1);
+        $result = $beetle->isValidMove($board, 0, 1, 1, 0);
 
-        // Assert
-        $expected = [
-            [1, 0], [-1, 1]
-        ];
-        $this->assertEquals($expected, $result);
+        $this->assertTrue($result);
     }
 
     public function testTileCannotMoveIfStackedUpon(): void
     {
         // Arrange
-        $mark = $this->getMockBuilder(\stdClass::class)->getMock();
-        $zina = $this->getMockBuilder(\stdClass::class)->getMock();
-        $board = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['setTile'])
-            ->getMock();
+        $mark = new Player('Mark', true);
+        $zina = new Player('Zina', false);
+        $board = new Board();
 
-        $beetleBot = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['isValidMove'])
-            ->getMock();
+        $board->setTile(0, 0, new Queen($mark));
+        $board->setTile(1, 0, new Queen($zina));
 
-        $beetleTop = $this->getMockBuilder(\stdClass::class)->getMock();
-
-        $mockTile = $this->getMockBuilder(\stdClass::class)->getMock();
-
-        $board->setTile(0, 0, $mockTile);
-        $board->setTile(1, 0, $mockTile);
+        $beetleBot = new Beetle($mark);
         $board->setTile(0, 1, $beetleBot);
+        $beetleTop = new Beetle($mark);
         $board->setTile(0, 1, $beetleTop);
-
-        $beetleBot->expects($this->once())
-            ->method('isValidMove')
-            ->with($board, 0, 1, 0, 0)
-            ->willReturn(false);
 
         // Act
         $result = $beetleBot->isValidMove($board, 0, 1, 0, 0);
@@ -105,28 +71,17 @@ final class BeetleTest extends TestCase
     public function testTileCanMoveIfItsTopOfStack(): void
     {
         // Arrange
-        $mark = $this->getMockBuilder(\stdClass::class)->getMock();
-        $zina = $this->getMockBuilder(\stdClass::class)->getMock();
-        $board = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['setTile'])
-            ->getMock();
+        $mark = new Player('Mark', true);
+        $zina = new Player('Zina', false);
+        $board = new Board();
 
-        $beetleBot = $this->getMockBuilder(\stdClass::class)->getMock();
-        $beetleTop = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['isValidMove'])
-            ->getMock();
+        $board->setTile(0, 0, new Queen($mark));
+        $board->setTile(1, 0, new Queen($zina));
 
-        $mockTile = $this->getMockBuilder(\stdClass::class)->getMock();
-
-        $board->setTile(0, 0, $mockTile);
-        $board->setTile(1, 0, $mockTile);
+        $beetleBot = new Beetle($mark);
         $board->setTile(0, 1, $beetleBot);
+        $beetleTop = new Beetle($mark);
         $board->setTile(0, 1, $beetleTop);
-
-        $beetleTop->expects($this->once())
-            ->method('isValidMove')
-            ->with($board, 0, 1, -1, 1)
-            ->willReturn(true);
 
         // Act
         $result = $beetleTop->isValidMove($board, 0, 1, -1, 1);
@@ -138,85 +93,47 @@ final class BeetleTest extends TestCase
     public function testTileCanMoveIfItsTopOfAVeryHighStack(): void
     {
         // Arrange
-        $mark = $this->getMockBuilder(\stdClass::class)->getMock();
-        $zina = $this->getMockBuilder(\stdClass::class)->getMock();
-        $board = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['setTile'])
-            ->getMock();
+        $mark = new Player('Mark', true);
+        $zina = new Player('Zina', false);
+        $board = new Board();
 
-        $beetleHighest = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['getMoves'])
-            ->getMock();
-
-        $mockTile = $this->getMockBuilder(\stdClass::class)->getMock();
-
-
-        $board->setTile(1, -1, $mockTile);
-        $board->setTile(0, 0, $mockTile);
-        $board->setTile(1, -1, $mockTile);
-        $board->setTile(1, -1, $mockTile);
-        $board->setTile(1, -1, $mockTile);
+        $queenFoundation = new Queen($mark);
+        $board->setTile(1, -1, $queenFoundation);
+        $queenUnstacked = new Queen($zina);
+        $board->setTile(0, 0, $queenUnstacked);
+        $beetleOnQueen = new Beetle($mark);
+        $board->setTile(1, -1, $beetleOnQueen);
+        $beetleOnTopOfBeetleOnQueen = new Beetle($zina);
+        $board->setTile(1, -1, $beetleOnTopOfBeetleOnQueen);
+        $beetleEvenHigher = new Beetle($mark);
+        $board->setTile(1, -1, $beetleEvenHigher);
+        $beetleHighest = new Beetle($zina);
         $board->setTile(1, -1, $beetleHighest);
 
-        $beetleHighest->expects($this->once())
-            ->method('getMoves')
-            ->with($board, 1, -1)
-            ->willReturn([[0, -1], [1, 0]]);
-
         // Act
-        $result = $beetleHighest->getMoves($board, 1, -1);
+        $result = $beetleHighest->isValidMove($board, 1, -1, 0, -1);
 
-        // Assert
-        $expected = [
-            [0, -1], [1, 0]
-        ];
-
-        $this->assertEquals($expected, $result);
+        $this->assertTrue($result);
     }
 
     public function testTileCannotMoveIfItsNotTopOfStack(): void
     {
         // Arrange
-        $mark = $this->getMockBuilder(\stdClass::class)->getMock();
-        $zina = $this->getMockBuilder(\stdClass::class)->getMock();
-        $board = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['setTile'])
-            ->getMock();
+        $mark = new Player('Mark', true);
+        $zina = new Player('Zina', false);
+        $board = new Board();
 
-        $queenFoundation = $this->getMockBuilder(\stdClass::class)->addMethods(['getMoves'])->getMock();
-        $beetleOnQueen = $this->getMockBuilder(\stdClass::class)->addMethods(['getMoves'])->getMock();
-        $beetleOnTopOfBeetleOnQueen = $this->getMockBuilder(\stdClass::class)->addMethods(['getMoves'])->getMock();
-        $beetleEvenHigher = $this->getMockBuilder(\stdClass::class)->addMethods(['getMoves'])->getMock();
-        $beetleHighest = $this->getMockBuilder(\stdClass::class)->addMethods(['getMoves'])->getMock();
-
-        $queenFoundation->expects($this->once())
-            ->method('getMoves')
-            ->with($board, 1, -1)
-            ->willReturn([]);
-        $beetleOnQueen->expects($this->once())
-            ->method('getMoves')
-            ->with($board, 1, -1)
-            ->willReturn([]);
-        $beetleOnTopOfBeetleOnQueen->expects($this->once())
-            ->method('getMoves')
-            ->with($board, 1, -1)
-            ->willReturn([]);
-        $beetleEvenHigher->expects($this->once())
-            ->method('getMoves')
-            ->with($board, 1, -1)
-            ->willReturn([]);
-        $beetleHighest->expects($this->once())
-            ->method('getMoves')
-            ->with($board, 1, -1)
-            ->willReturn([]);
-
-        $mockTile = $this->getMockBuilder(\stdClass::class)->getMock();
-
+        $queenFoundation = new Queen($mark);
         $board->setTile(1, -1, $queenFoundation);
-        $board->setTile(0, 0, $mockTile);
+        $queenUnstacked = new Queen($zina);
+        $board->setTile(0, 0, $queenUnstacked);
+        $beetleOnQueen = new Beetle($mark);
         $board->setTile(1, -1, $beetleOnQueen);
+        $beetleOnTopOfBeetleOnQueen = new Beetle($zina);
         $board->setTile(1, -1, $beetleOnTopOfBeetleOnQueen);
+        $beetleEvenHigher = new Beetle($mark);
         $board->setTile(1, -1, $beetleEvenHigher);
+        $beetleHighest = new Beetle($zina);
         $board->setTile(1, -1, $beetleHighest);
 
         // Act
@@ -224,7 +141,6 @@ final class BeetleTest extends TestCase
         $result2 = $beetleOnQueen->getMoves($board, 1, -1);
         $result3 = $beetleOnTopOfBeetleOnQueen->getMoves($board, 1, -1);
         $result4 = $beetleEvenHigher->getMoves($board, 1, -1);
-        $result5 = $beetleHighest->getMoves($board, 1, -1);
 
         // Assert
         $expected = [];
@@ -233,6 +149,5 @@ final class BeetleTest extends TestCase
         $this->assertEquals($expected, $result2);
         $this->assertEquals($expected, $result3);
         $this->assertEquals($expected, $result4);
-        $this->assertEquals($expected, $result5);
     }
 }

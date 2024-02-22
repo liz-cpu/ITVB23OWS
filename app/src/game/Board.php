@@ -3,6 +3,7 @@
 namespace game;
 
 use tiles\Tile;
+use game\Player;
 
 /**
  * Represents the game board. The game uses a hexagonal grid with axial
@@ -36,7 +37,12 @@ class Board
      */
     public function getTile(int $q, int $r): ?Tile
     {
-        return $this->inner_board[$q][$r] ?? null;
+        if (!isset($this->inner_board[$q][$r])) {
+            return null;
+        }
+        $tiles_at_coordinates = $this->inner_board[$q][$r];
+
+        return reset($tiles_at_coordinates);
     }
 
 
@@ -48,16 +54,59 @@ class Board
      */
     public function setTile(int $q, int $r, Tile $tile): void
     {
-        $this->inner_board[$q][$r] = $tile;
+        if (!isset($this->inner_board[$q][$r])) {
+            $this->inner_board[$q][$r] = [];
+        }
+
+        $the_stack = $this->inner_board[$q][$r];
+
+        array_unshift($the_stack, $tile);
+
+        $this->updateZCoordinates($the_stack);
+
+        $this->inner_board[$q][$r] = $the_stack;
     }
 
+
+    /**
+     * Set the correct Z-values to the tiles in an array.
+     * The first tile in the array will have a Z-value of 1, the second -1,
+     * the third -2, and so on. If there is only one tile in the array, its
+     * Z-value will be 0.
+     * @param array $tiles The array of tiles.
+     * @return void
+     */
+    private function updateZCoordinates(array $tiles): void
+    {
+        if (count($tiles) === 1) {
+            $tiles[0]->setZ(0);
+        } else {
+            $tiles[0]->setZ(1);
+            for ($i = 1; $i < count($tiles); $i++) {
+                $tiles[$i]->setZ(-$i);
+            }
+        }
+    }
 
 
     public function removeTile(int $q, int $r): ?Tile
     {
-        $tile = $this->inner_board[$q][$r] ?? null;
-        unset($this->inner_board[$q][$r]);
-        return $tile;
+        if (!isset($this->inner_board[$q][$r])) {
+            return null;
+        }
+
+        $stacked_tiles = $this->inner_board[$q][$r];
+
+        if (count($stacked_tiles) > 1) {
+            $tile = array_shift($stacked_tiles);
+            $this->updateZCoordinates($stacked_tiles);
+            $this->inner_board[$q][$r] = $stacked_tiles;
+            return $tile;
+        } else {
+            $tile = array_shift($stacked_tiles);
+            unset($this->inner_board[$q][$r]);
+            return $tile;
+        }
     }
 
 
