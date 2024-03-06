@@ -2,6 +2,7 @@
 
 namespace game;
 
+use tiles\Queen;
 use tiles\Tile;
 
 class Player

@@ -1,108 +1,49 @@
 <?php
 
-namespace Hive;
-
+require_once 'vendor/autoload.php';
 session_start();
 
-use Hive\Util;
-use Hive\Database;
-use Hive\Game;
+use game\Game;
+use core\PageActions;
 
-if (!isset($_SESSION['board'])) {
-    header('Location: restart.php');
-    exit(0);
+if (!isset($_SESSION['game']) or $_SESSION['game'] === null) {
+    $game = new Game();
+    $_SESSION['game'] = serialize($game);
+} else {
+    $game = unserialize($_SESSION['game']);
+    $_SESSION['game'] = serialize($game);
 }
 
-$game = new Game($_SESSION['board'], $_SESSION['player'], $_SESSION['hand']);
-?>
 
+$handler = new PageActions($game);
+$handler->handleAction();
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <title>Hive</title>
-    <style>
-        <?php include 'style.css'; ?>
-    </style>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>The Hive Game</title>
+    <meta name="description" content="Play Hive in your browser">
+    <meta name="author" content="liz-cpu">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./assets/style.css">
+    <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon" />
 </head>
 
 <body>
-    <?php $game->renderBoard(); ?>
+    <div class="container main">
+        <h1>🐝Hive🐝</h1>
 
-    <div class="hand">
-        White: <?php $game->renderHand(0); ?>
+        <main id="game">
+            <?php echo $game->renderBoard(); ?>
+        </main>
+
     </div>
-
-    <div class="hand">
-        Black: <?php $game->renderHand(1); ?>
-    </div>
-
-    <div class="turn">
-        Turn: <?php $game->renderTurn(); ?>
-    </div>
-
-    <form method="post" action="play.php">
-        <select name="piece">
-            <?php
-            foreach ($hand[$player] as $tile => $ct) {
-                echo "<option value=\"$tile\">$tile</option>";
-            }
-            ?>
-        </select>
-        <select name="to">
-            <?php
-            foreach ($to as $pos) {
-                echo "<option value=\"$pos\">$pos</option>";
-            }
-            ?>
-        </select>
-        <input type="submit" value="Play">
-    </form>
-    <form method="post" action="move.php">
-        <select name="from">
-            <?php
-            foreach (array_keys($board) as $pos) {
-                echo "<option value=\"$pos\">$pos</option>";
-            }
-            ?>
-        </select>
-        <select name="to">
-            <?php
-            foreach ($to as $pos) {
-                echo "<option value=\"$pos\">$pos</option>";
-            }
-            ?>
-        </select>
-        <input type="submit" value="Move">
-    </form>
-    <form method="post" action="pass.php">
-        <input type="submit" value="Pass">
-    </form>
-    <form method="post" action="restart.php">
-        <input type="submit" value="Restart">
-    </form>
-    <strong>
-        <?php if (isset($_SESSION['error'])) {
-            echo $_SESSION['error'];
-        }
-        unset($_SESSION['error']);
-        ?>
-    </strong>
-    <ol>
-        <?php
-        $db = Database::getInstance();
-        $conn = $db->connect();
-        $stmt = $conn->prepare('SELECT * FROM moves WHERE game_id = ' . $_SESSION['game_id']);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        while ($row = $result->fetch_array()) {
-            echo '<li>' . $row[2] . ' ' . $row[3] . ' ' . $row[4] . '</li>';
-        }
-        ?>
-    </ol>
-    <form method="post" action="undo.php">
-        <input type="submit" value="Undo">
-    </form>
+    <aside id="sidebar">
+        <?php echo $game->renderSidebar(); ?>
+    </aside>
 </body>
 
 </html>

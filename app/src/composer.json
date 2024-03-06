@@ -11,7 +11,8 @@
         "psr-4": {
             "game\\": "./game",
             "tiles\\": "./tiles",
-            "tests\\": "./tests"
+            "tests\\": "./tests",
+            "core\\": "./core"
         }
     }
 }
