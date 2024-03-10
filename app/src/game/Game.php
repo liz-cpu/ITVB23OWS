@@ -149,16 +149,19 @@ class Game
         return ob_get_clean();
     }
 
-    public function renderSidebar()
+    public function renderSidebar(): string
     {
         ob_start();
     ?>
         <aside id="sidebar">
             <h2><?php echo $this->getCurrentPlayer()->getName(); ?>'s turn</h2>
+            <?php
+            $hand = $this->getCurrentPlayer()->getHand();
+            ?>
             <form method="post">
-                <button name="action" value="place">Place</button>
+                <button name="action" value="place" <?php echo empty($hand) ? 'disabled' : ''; ?>>Place</button>
                 <button name="action" value="reset">Reset</button>
-                <select name="tile" id="tile">
+                <select name="tile" id="tile" <?php echo empty($hand) ? 'disabled' : ''; ?>>
                     <?php
                     $hand = $this->getCurrentPlayer()->getHand();
                     foreach ($hand as $tile) {
@@ -168,9 +171,8 @@ class Game
                     }
                     ?>
                 </select>
-                <select name="coords" id="coords">
+                <select name="coords" id="coords" <?php echo empty($hand) ? 'disabled' : ''; ?>>
                     <?php
-
                     $placements = $hand[0]->getPlacements($this->getBoard());
                     foreach ($placements as $placement) {
                         $q = $placement[0];
