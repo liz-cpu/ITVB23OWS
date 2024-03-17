@@ -14,6 +14,13 @@ services:
             context: ./db
         ports:
             - "3307:3306"
+    hive_ai:
+        build:
+            context: ./ai
+        ports:
+          - "8000:8000"
+        depends_on:
+            - hive_game
     jenkins:
         image: jenkins/jenkins:lts
         ports:
